@@ -1,5 +1,6 @@
 package com.auditing.audit.model;
 
+
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,8 +26,8 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false) // Tambahkan kolom role
-    private String role;
+    @Column(nullable = false)
+    private String role; // Menyimpan role sebagai String, misal "ROLE_ADMIN", "ROLE_KARYAWAN"
 
-    private boolean enabled = true; // Tambahkan field enabled, default true
+    private boolean enabled = true;
 }

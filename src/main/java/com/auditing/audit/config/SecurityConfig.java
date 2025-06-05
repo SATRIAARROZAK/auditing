@@ -1,16 +1,14 @@
-package com.auditing.audit.config; // Sesuaikan package Anda
+package com.auditing.audit.config;
 
-import com.auditing.audit.service.UserDetailsServiceImpl; // Sesuaikan package service Anda
+import com.auditing.audit.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -20,63 +18,55 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     @Autowired
-    private UserDetailsServiceImpl userDetailsService; // Ini benar
+    private UserDetailsServiceImpl userDetailsService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        // ... konfigurasi HttpSecurity Anda ...
-         http
-            .csrf(AbstractHttpConfigurer::disable)
-            .authorizeHttpRequests(authorizeRequests ->
-                    authorizeRequests
-                            .requestMatchers("/login", "/register", "/css/**", "/js/**", "/error").permitAll()
-                            .requestMatchers("/admin/**", "/users/add", "/users/save", "/users/list").hasAuthority("ROLE_ADMIN")
-                            .requestMatchers("/kepalaspi/**").hasAuthority("ROLE_KEPALASPI")
-                            .requestMatchers("/sekretaris/**").hasAuthority("ROLE_SEKRETARIS")
-                            .requestMatchers("/karyawan/**").hasAuthority("ROLE_KARYAWAN")
-                            .requestMatchers("/dashboard").hasAnyAuthority("ROLE_ADMIN", "ROLE_KEPALASPI", "ROLE_SEKRETARIS", "ROLE_KARYAWAN")
-                            .anyRequest().authenticated()
-            )
-            // ... sisa konfigurasi ...
-            .formLogin(formLogin ->
-                    formLogin
-                            .loginPage("/login")
-                            .loginProcessingUrl("/perform_login")
-                            .defaultSuccessUrl("/dashboard", true)
-                            .failureUrl("/login?error=true")
-                            .permitAll()
-            )
-            .logout(logout ->
-                    logout
-                            .logoutUrl("/logout")
-                            .logoutSuccessUrl("/login?logout=true")
-                            .invalidateHttpSession(true)
-                            .deleteCookies("JSESSIONID")
-                            .permitAll()
-            )
-            .exceptionHandling(exceptionHandling ->
-                    exceptionHandling.accessDeniedPage("/access-denied")
-            );
+        http
+                .csrf(AbstractHttpConfigurer::disable) // Nonaktifkan CSRF untuk pengembangan (pertimbangkan keamanan untuk produksi)
+                .authorizeHttpRequests(authorizeRequests ->
+                        authorizeRequests
+                                .requestMatchers("/login", "/css/**", "/js/**", "/error").permitAll()
+                                .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN") // Akses /admin/** hanya untuk ROLE_ADMIN
+                                .requestMatchers("/dashboard").hasAnyAuthority("ROLE_ADMIN", "ROLE_KEPALASPI", "ROLE_SEKRETARIS", "ROLE_KARYAWAN")
+                                // Tambahkan path lain dan rolenya di sini
+                                // .requestMatchers("/kepalaspi/**").hasAuthority("ROLE_KEPALASPI")
+                                // .requestMatchers("/sekretaris/**").hasAuthority("ROLE_SEKRETARIS")
+                                // .requestMatchers("/karyawan/**").hasAuthority("ROLE_KARYAWAN")
+                                .anyRequest().authenticated() // Semua request lain butuh autentikasi
+                )
+                .formLogin(formLogin ->
+                        formLogin
+                                .loginPage("/login") // URL halaman login kustom
+                                .loginProcessingUrl("/perform_login") // URL untuk submit form login (default Spring Security)
+                                .defaultSuccessUrl("/dashboard", true) // URL setelah login sukses
+                                .failureUrl("/login?error=true") // URL jika login gagal
+                                .permitAll()
+                )
+                .logout(logout ->
+                        logout
+                                .logoutUrl("/logout")
+                                .logoutSuccessUrl("/login?logout=true")
+                                .invalidateHttpSession(true)
+                                .deleteCookies("JSESSIONID")
+                                .permitAll()
+                )
+                .exceptionHandling(exceptionHandling ->
+                        exceptionHandling.accessDeniedPage("/access-denied") // Halaman kustom untuk akses ditolak
+                );
         return http.build();
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() { // Definisi bean PasswordEncoder
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService); // Menggunakan UserDetailsServiceImpl yang di-inject
-        authProvider.setPasswordEncoder(passwordEncoder()); // Menggunakan PasswordEncoder bean dari method di atas
+        authProvider.setUserDetailsService(userDetailsService);
+        authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }
-
-    // Tidak perlu @Bean UserDetailsService lagi jika sudah ada @Service UserDetailsServiceImpl
-    // dan di-autowired di atas.
-    // @Bean
-    // public UserDetailsService userDetailsService() {
-    // return userDetailsService;
-    // }
 }

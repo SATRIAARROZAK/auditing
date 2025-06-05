@@ -1,10 +1,10 @@
 package com.auditing.audit.model;
 
 public enum Role {
-    admin("ROLE_Admin"),
-    kepalaspi("ROLE_KepalaSPI"),
-    sekretaris("ROLE_Sekretaris"),
-    pegawai("ROLE_Pegawai"),;
+    ADMIN("ROLE_ADMIN"),
+    KEPALASPI("ROLE_KEPALASPI"),
+    SEKRETARIS("ROLE_SEKRETARIS"),
+    KARYAWAN("ROLE_KARYAWAN"),;
 
     private final String authority;
 

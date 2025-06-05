@@ -19,5 +19,5 @@ public class UserDto {
     private String password;
 
     @NotEmpty(message = "Role tidak boleh kosong")
-    private String role;
+    private String role; // Role yang dipilih dari form (misal "ADMIN", "KARYAWAN")
 }

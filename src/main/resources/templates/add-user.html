@@ -8,28 +8,32 @@
         .container { background-color: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 0 15px rgba(0,0,0,0.1); width: 450px; }
         h2 { text-align: center; color: #333; margin-bottom: 20px; }
         .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; color: #555; }
+        label { display: block; margin-bottom: 5px; color: #555; font-weight: bold; }
         input[type="text"], input[type="email"], input[type="password"], select {
-            width: calc(100% - 22px);
+            width: calc(100% - 22px); /* Adjusted for padding */
             padding: 10px;
             border: 1px solid #ddd;
             border-radius: 4px;
             box-sizing: border-box;
+            margin-top: 3px;
         }
+        select { width: 100%; }
         button {
             width: 100%;
-            padding: 10px;
+            padding: 10px 15px;
             background-color: #28a745;
             color: white;
             border: none;
             border-radius: 4px;
             cursor: pointer;
             font-size: 16px;
+            margin-top: 10px;
         }
         button:hover { background-color: #218838; }
-        .error-message { color: red; font-size: 0.9em; margin-top: 3px; }
-        .back-link { display: block; text-align: center; margin-top: 20px; color: #007bff; text-decoration: none; }
-        .back-link:hover { text-decoration: underline; }
+        .error-message { color: red; font-size: 0.9em; margin-top: 5px; display: block; }
+        .nav-links { margin-top: 20px; text-align: center;}
+        .nav-links a { color: #007bff; text-decoration: none; margin: 0 10px; }
+        .nav-links a:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
@@ -39,31 +43,33 @@
         <form th:action="@{/admin/users/save}" th:object="${userDto}" method="post">
             <div class="form-group">
                 <label for="username">Username:</label>
-                <input type="text" id="username" th:field="*{username}" required />
+                <input type="text" id="username" th:field="*{username}" />
                 <span th:if="${#fields.hasErrors('username')}" th:errors="*{username}" class="error-message"></span>
             </div>
             <div class="form-group">
                 <label for="email">Email:</label>
-                <input type="email" id="email" th:field="*{email}" required />
+                <input type="email" id="email" th:field="*{email}" />
                 <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="error-message"></span>
             </div>
             <div class="form-group">
                 <label for="password">Password:</label>
-                <input type="password" id="password" th:field="*{password}" required />
+                <input type="password" id="password" th:field="*{password}" />
                 <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="error-message"></span>
             </div>
             <div class="form-group">
                 <label for="role">Role:</label>
-                <select id="role" th:field="*{role}" required>
-                    <option value="">Pilih Role</option>
+                <select id="role" th:field="*{role}">
+                    <option value="">Pilih Role...</option>
                     <option th:each="roleOpt : ${availableRoles}" th:value="${roleOpt}" th:text="${roleOpt}"></option>
                 </select>
                 <span th:if="${#fields.hasErrors('role')}" th:errors="*{role}" class="error-message"></span>
             </div>
             <button type="submit">Simpan User</button>
         </form>
-        <a th:href="@{/dashboard}" class="back-link">Kembali ke Dashboard</a>
-         <a th:href="@{/admin/users/list}" class="back-link" style="margin-top: 10px;">Lihat Daftar User</a>
+        <div class="nav-links">
+            <a th:href="@{/admin/users/list}">Lihat Daftar User</a> |
+            <a th:href="@{/dashboard}">Kembali ke Dashboard</a>
+        </div>
     </div>
 </body>
 </html>

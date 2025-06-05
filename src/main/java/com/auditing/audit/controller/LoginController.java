@@ -1,9 +1,13 @@
 package com.auditing.audit.controller;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.Collection;
 
 @Controller
 public class LoginController {
@@ -21,10 +25,18 @@ public class LoginController {
         return "login";
     }
 
-     // Halaman registrasi bisa ditambahkan di sini jika diperlukan
-    // @GetMapping("/register")
-    // public String registerPage(Model model) {
-    // model.addAttribute("user", new com.example.auditingapp.model.User());
-    // return "register";
-    // }
+    @GetMapping("/dashboard")
+    public String dashboardPage(Authentication authentication, Model model) {
+        // Contoh mendapatkan role, bisa digunakan untuk logika tambahan di dashboard
+        if (authentication != null) {
+            Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+            model.addAttribute("authorities", authorities);
+        }
+        return "dashboard";
+    }
+
+    @GetMapping("/access-denied")
+    public String accessDeniedPage() {
+        return "access-denied";
+    }
 }

@@ -1,16 +1,16 @@
-package com.auditing.audit.service; // Sesuaikan package Anda
+package com.auditing.audit.service;
 
 import com.auditing.audit.dto.UserDto;
 import com.auditing.audit.model.User;
 import com.auditing.audit.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service; // <-- PASTIKAN INI ADA
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
-@Service // <-- PASTIKAN ANOTASI INI ADA
+@Service
 public class UserServiceImpl implements UserService {
 
     @Autowired
@@ -19,15 +19,16 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    // ... sisa implementasi method Anda ...
     @Override
     public User saveUser(UserDto userDto) {
         User user = new User();
         user.setUsername(userDto.getUsername());
         user.setEmail(userDto.getEmail());
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
+
+        // Mengelola prefix "ROLE_" untuk role
         String role = userDto.getRole();
-        if (role != null && !role.startsWith("ROLE_")) {
+        if (role != null && !role.toUpperCase().startsWith("ROLE_")) {
             role = "ROLE_" + role.toUpperCase();
         }
         user.setRole(role);
