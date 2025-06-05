@@ -1,3 +1,4 @@
+// src/main/java/com/auditing/audit/model/AuditEntry.java
 package com.auditing.audit.model;
 
 import jakarta.persistence.*;
@@ -20,15 +21,15 @@ public class AuditEntry {
     @Column(nullable = false)
     private String title;
 
-    @Lob // Untuk teks yang panjang
+    @Lob
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    private String category; // Contoh kategori audit
+    private String category;
 
-    @ManyToOne // Relasi ke user yang membuat entri
+    @ManyToOne
     @JoinColumn(name = "created_by_user_id")
-    private User createdBy;
+    private User createdBy; // User yang membuat atau terkait dengan entri audit
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

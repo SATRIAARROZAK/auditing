@@ -6,6 +6,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+// Tambahkan import ini untuk @EnableMethodSecurity
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -15,6 +17,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity(prePostEnabled = true) // Aktifkan method security untuk @PreAuthorize
 public class SecurityConfig {
 
     @Autowired
@@ -23,24 +26,21 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable) // Nonaktifkan CSRF untuk pengembangan (pertimbangkan keamanan untuk produksi)
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
                                 .requestMatchers("/login", "/css/**", "/js/**", "/error").permitAll()
-                                .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN") // Akses /admin/** hanya untuk ROLE_ADMIN
-                                .requestMatchers("/dashboard").hasAnyAuthority("ROLE_ADMIN", "ROLE_KEPALASPI", "ROLE_SEKRETARIS", "ROLE_KARYAWAN")
-                                // Tambahkan path lain dan rolenya di sini
-                                // .requestMatchers("/kepalaspi/**").hasAuthority("ROLE_KEPALASPI")
-                                // .requestMatchers("/sekretaris/**").hasAuthority("ROLE_SEKRETARIS")
-                                // .requestMatchers("/karyawan/**").hasAuthority("ROLE_KARYAWAN")
-                                .anyRequest().authenticated() // Semua request lain butuh autentikasi
+                                .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
+                                // Amankan semua path di bawah /dashboard
+                                .requestMatchers("/dashboard/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_KEPALASPI", "ROLE_SEKRETARIS", "ROLE_KARYAWAN")
+                                .anyRequest().authenticated()
                 )
                 .formLogin(formLogin ->
                         formLogin
-                                .loginPage("/login") // URL halaman login kustom
-                                .loginProcessingUrl("/perform_login") // URL untuk submit form login (default Spring Security)
-                                .defaultSuccessUrl("/dashboard", true) // URL setelah login sukses
-                                .failureUrl("/login?error=true") // URL jika login gagal
+                                .loginPage("/login")
+                                .loginProcessingUrl("/perform_login")
+                                .defaultSuccessUrl("/dashboard", true)
+                                .failureUrl("/login?error=true")
                                 .permitAll()
                 )
                 .logout(logout ->
@@ -52,7 +52,7 @@ public class SecurityConfig {
                                 .permitAll()
                 )
                 .exceptionHandling(exceptionHandling ->
-                        exceptionHandling.accessDeniedPage("/access-denied") // Halaman kustom untuk akses ditolak
+                        exceptionHandling.accessDeniedPage("/access-denied")
                 );
         return http.build();
     }
