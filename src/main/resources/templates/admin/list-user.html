@@ -36,21 +36,19 @@
         <table th:if="${not #lists.isEmpty(users)}">
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Username</th>
+                    <th>No.</th> <th>Username</th>
                     <th>Email</th>
                     <th>Role</th>
                     <th>Enabled</th>
-                    </tr>
+                </tr>
             </thead>
             <tbody>
-                <tr th:each="user : ${users}">
-                    <td th:text="${user.id}"></td>
+                <tr th:each="user, iterStat : ${users}">
+                    <td th:text="${iterStat.count}"></td>
                     <td th:text="${user.username}"></td>
                     <td th:text="${user.email}"></td>
-                    <td th:text="${user.role.replace('ROLE_', '')}"></td>
-                    <td th:text="${user.enabled ? 'Ya' : 'Tidak'}"></td>
-                    </tr>
+                    <td th:text="${user.role != null ? user.role.replace('ROLE_', '') : ''}"></td> <td th:text="${user.enabled ? 'Ya' : 'Tidak'}"></td>
+                </tr>
             </tbody>
         </table>
         <div th:if="${#lists.isEmpty(users)}" class="no-users">
