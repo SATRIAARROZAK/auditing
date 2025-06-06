@@ -1,33 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security6">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top" th:fragment="navbar">
-        <div class="container-fluid">
-            <a class="navbar-brand" th:href="@{/dashboard}">AuditApp</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdownMain" aria-controls="navbarNavDropdownMain" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNavDropdownMain">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                         <a class="nav-link" th:classappend="${#httpServletRequest.getRequestURI().startsWith('/dashboard') ? 'active' : ''}" th:href="@{/dashboard}">Dashboard</a>
-                    </li>
-                    <li class="nav-item" sec:authorize="hasAuthority('ROLE_ADMIN')">
-                        <a class="nav-link" th:classappend="${#httpServletRequest.getRequestURI().startsWith('/admin') ? 'active' : ''}" th:href="@{/admin/users/list}">Manajemen User</a>
-                    </li>
-                    <li class="nav-item" sec:authorize="hasAuthority('ROLE_KEPALASPI')">
-                        <a class="nav-link" th:href="@{/kepalaspi/reports}">Laporan SPI</a>
-                    </li>
-                     <li class="nav-item" sec:authorize="hasAuthority('ROLE_SEKRETARIS')">
-                        <a class="nav-link" th:href="@{/sekretaris/schedules}">Jadwal Audit</a>
-                    </li>
-                     <li class="nav-item" sec:authorize="hasAuthority('ROLE_KARYAWAN')">
-                        <a class="nav-link" th:href="@{/karyawan/tasks}">Tugas Saya</a>
-                    </li>
-                </ul>
-                <span class="navbar-text text-white me-3" sec:authorize="isAuthenticated()">
-                    Halo, <strong sec:authentication="name">User</strong>!
-                </span>
-                <form th:action="@{/logout}" method="post" class="d-flex" sec:authorize="isAuthenticated()">
-                    <button class="btn btn-danger btn-sm" type="submit">Logout</button>
-                </form>
-            </div>
+    <div class="container-fluid">
+        <a class="navbar-brand" th:href="@{/dashboard}">AuditApp</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdownMain" aria-controls="navbarNavDropdownMain" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavDropdownMain">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                     <a class="nav-link" 
+                        th:classappend="${#request.getRequestURI().startsWith('/dashboard') ? 'active' : ''}" 
+                        th:href="@{/dashboard}">Dashboard</a>
+                </li>
+                <li class="nav-item" sec:authorize="hasAuthority('ROLE_ADMIN')">
+                    <a class="nav-link" 
+                       th:classappend="${#request.getRequestURI().startsWith('/admin') ? 'active' : ''}" 
+                       th:href="@{/admin/users/list}">Manajemen User</a>
+                </li>
+                <li class="nav-item" sec:authorize="hasAuthority('ROLE_KEPALASPI')">
+                    <a class="nav-link" 
+                       th:classappend="${#request.getRequestURI().startsWith('/kepalaspi') ? 'active' : ''}" 
+                       th:href="@{/kepalaspi/reports}">Laporan SPI</a>
+                </li>
+                 <li class="nav-item" sec:authorize="hasAuthority('ROLE_SEKRETARIS')">
+                    <a class="nav-link" 
+                       th:classappend="${#request.getRequestURI().startsWith('/sekretaris') ? 'active' : ''}" 
+                       th:href="@{/sekretaris/schedules}">Jadwal Audit</a>
+                </li>
+                 <li class="nav-item" sec:authorize="hasAuthority('ROLE_KARYAWAN')">
+                    <a class="nav-link" 
+                       th:classappend="${#request.getRequestURI().startsWith('/karyawan') ? 'active' : ''}" 
+                       th:href="@{/karyawan/tasks}">Tugas Saya</a>
+                </li>
+            </ul>
+            <span class="navbar-text text-white me-3" sec:authorize="isAuthenticated()">
+                Halo, <strong sec:authentication="name">User</strong>!
+            </span>
+            <form th:action="@{/logout}" method="post" class="d-flex" sec:authorize="isAuthenticated()">
+                <button class="btn btn-danger btn-sm" type="submit">Logout</button>
+            </form>
         </div>
-    </nav>
+    </div>
+</nav>
+</body>
+</html>
+
+<!-- <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top" th:fragment="navbar">
+    <div class="container-fluid">
+        <a class="navbar-brand" th:href="@{/dashboard}">AuditApp</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdownMain"
+            aria-controls="navbarNavDropdownMain" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavDropdownMain">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link"
+                        th:classappend="${#request.getRequestURI().startsWith('/dashboard') ? 'active' : ''}"
+                        th:href="@{/dashboard}">Dashboard</a>
+                </li>
+                <li class="nav-item" sec:authorize="hasAuthority('ROLE_ADMIN')">
+                    <a class="nav-link"
+                        th:classappend="${#httpServletRequest.getRequestURI().startsWith('/admin') ? 'active' : ''}"
+                        th:href="@{/admin/users/list}">Manajemen User</a>
+                </li>
+                <li class="nav-item" sec:authorize="hasAuthority('ROLE_KEPALASPI')">
+                    <a class="nav-link"
+                        th:classappend="${#httpServletRequest.getRequestURI().startsWith('/kepalaspi') ? 'active' : ''}"
+                        th:href="@{/kepalaspi/reports}">Laporan SPI</a>
+                </li>
+                <li class="nav-item" sec:authorize="hasAuthority('ROLE_SEKRETARIS')">
+                    <a class="nav-link"
+                        th:classappend="${#httpServletRequest.getRequestURI().startsWith('/sekretaris') ? 'active' : ''}"
+                        th:href="@{/sekretaris/schedules}">Jadwal Audit</a>
+                </li>
+                <li class="nav-item" sec:authorize="hasAuthority('ROLE_KARYAWAN')">
+                    <a class="nav-link"
+                        th:classappend="${#httpServletRequest.getRequestURI().startsWith('/karyawan') ? 'active' : ''}"
+                        th:href="@{/karyawan/tasks}">Tugas Saya</a>
+                </li>
+            </ul>
+            <span class="navbar-text text-white me-3" sec:authorize="isAuthenticated()">
+                Halo, <strong sec:authentication="name">User</strong>!
+            </span>
+            <form th:action="@{/logout}" method="post" class="d-flex" sec:authorize="isAuthenticated()">
+                <button class="btn btn-danger btn-sm" type="submit">Logout</button>
+            </form>
+        </div>
+    </div>
+</nav> -->

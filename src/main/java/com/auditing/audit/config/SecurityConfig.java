@@ -15,45 +15,35 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true) // Aktifkan method security untuk @PreAuthorize
 public class SecurityConfig {
 
-    @Autowired
-    private UserDetailsServiceImpl userDetailsService;
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(authorizeRequests ->
-                        authorizeRequests
-                                .requestMatchers("/login", "/css/**", "/js/**", "/error").permitAll()
-                                .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
-                                // Amankan semua path di bawah /dashboard
-                                .requestMatchers("/dashboard/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_KEPALASPI", "ROLE_SEKRETARIS", "ROLE_KARYAWAN")
-                                .anyRequest().authenticated()
-                )
-                .formLogin(formLogin ->
-                        formLogin
-                                .loginPage("/login")
-                                .loginProcessingUrl("/perform_login")
-                                .defaultSuccessUrl("/dashboard", true)
-                                .failureUrl("/login?error=true")
-                                .permitAll()
-                )
-                .logout(logout ->
-                        logout
-                                .logoutUrl("/logout")
-                                .logoutSuccessUrl("/login?logout=true")
-                                .invalidateHttpSession(true)
-                                .deleteCookies("JSESSIONID")
-                                .permitAll()
-                )
-                .exceptionHandling(exceptionHandling ->
-                        exceptionHandling.accessDeniedPage("/access-denied")
-                );
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
+                .requestMatchers("/", "/login").permitAll()
+                .requestMatchers("/dashboard").authenticated()
+                .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
+                .requestMatchers("/kepalaspi/**").hasAuthority("ROLE_KEPALASPI")
+                .requestMatchers("/sekretaris/**").hasAuthority("ROLE_SEKRETARIS")
+                .requestMatchers("/karyawan/**").hasAuthority("ROLE_KARYAWAN")
+                .anyRequest().authenticated()
+            )
+            .formLogin(form -> form
+                .loginPage("/login")
+                .defaultSuccessUrl("/dashboard", true)
+                .permitAll()
+            )
+            .logout(logout -> logout
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/login?logout")
+                .permitAll()
+            );
         return http.build();
     }
 
@@ -61,12 +51,56 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
-    @Bean
-    public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService);
-        authProvider.setPasswordEncoder(passwordEncoder());
-        return authProvider;
-    }
 }
+// public class SecurityConfig {
+
+//     @Autowired
+//     private UserDetailsServiceImpl userDetailsService;
+
+//     @Bean
+//     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//         http
+//                 .csrf(AbstractHttpConfigurer::disable)
+//                 .authorizeHttpRequests(authorizeRequests ->
+//                         authorizeRequests
+//                                 .requestMatchers("/login", "/css/**", "/js/**", "/error").permitAll()
+//                                 .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
+//                                 // Amankan semua path di bawah /dashboard
+//                                 .requestMatchers("/dashboard/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_KEPALASPI", "ROLE_SEKRETARIS", "ROLE_KARYAWAN")
+//                                 .anyRequest().authenticated()
+//                 )
+//                 .formLogin(formLogin ->
+//                         formLogin
+//                                 .loginPage("/login")
+//                                 .loginProcessingUrl("/perform_login")
+//                                 .defaultSuccessUrl("/dashboard", true)
+//                                 .failureUrl("/login?error=true")
+//                                 .permitAll()
+//                 )
+//                 .logout(logout ->
+//                         logout
+//                                 .logoutUrl("/logout")
+//                                 .logoutSuccessUrl("/login?logout=true")
+//                                 .invalidateHttpSession(true)
+//                                 .deleteCookies("JSESSIONID")
+//                                 .permitAll()
+//                 )
+//                 .exceptionHandling(exceptionHandling ->
+//                         exceptionHandling.accessDeniedPage("/access-denied")
+//                 );
+//         return http.build();
+//     }
+
+//     @Bean
+//     public PasswordEncoder passwordEncoder() {
+//         return new BCryptPasswordEncoder();
+//     }
+
+//     @Bean
+//     public AuthenticationProvider authenticationProvider() {
+//         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+//         authProvider.setUserDetailsService(userDetailsService);
+//         authProvider.setPasswordEncoder(passwordEncoder());
+//         return authProvider;
+//     }
+// }
