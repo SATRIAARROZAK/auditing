@@ -35,8 +35,8 @@ public class LoginController {
         return "dashboard";
     }
 
-    @GetMapping("/access-denied")
+    @GetMapping("/acces-denied")
     public String accessDeniedPage() {
-        return "access-denied";
+        return "acces-denied";
     }
 }
